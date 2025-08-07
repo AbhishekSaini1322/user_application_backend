@@ -31,13 +31,13 @@ module.exports = upload;
 // I'm not using the below `multer.diskStorage()` configuration (for local uploads)
 // because I'm using MongoDB Atlas (cloud database) in this project.
 
-// ➤ Since MongoDB Atlas is a cloud-based service and does not support storing files directly,
+//  Since MongoDB Atlas is a cloud-based service and does not support storing files directly,
 // it's a better practice to upload images to a cloud file hosting service like Cloudinary.
 
-// ➤ Cloudinary provides a public URL for each uploaded image, which I save in the MongoDB database.
+//  Cloudinary provides a public URL for each uploaded image, which I save in the MongoDB database.
 // This keeps my database clean and efficient, and my app easily scalable.
 
-// ✅ That's why I'm using `multer-storage-cloudinary` instead of saving files locally in an "uploads/" folder.
+//  That's why I'm using `multer-storage-cloudinary` instead of saving files locally in an "uploads/" folder.
 
 
 

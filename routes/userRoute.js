@@ -6,7 +6,6 @@ const { authenticator } = require("../utils/authuser");
 const upload = require("../middleware/upload");
 
 
-// Apply JWT auth middleware for protected routes
 u_router.use((req, res, next) => authenticator.authenticateToken(req, res, next, "user"));
 
 u_router.post("/register", register);

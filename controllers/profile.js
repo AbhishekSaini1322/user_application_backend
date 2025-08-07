@@ -69,16 +69,15 @@ const login = async (req, res) => {
           role: user.role
         }, // payload
         process.env.JWT_SECRET,
-        { expiresIn: "1d" } // token expiry time optional
+        { expiresIn: "1d" } 
       );
   
-      // Send response
       res.status(200).json({
         success: true,
         message: "Login successful",
         token,
         user: {
-          username: user.username,                     // optional
+          username: user.username,                     
         },
       });
     } catch (error) {
@@ -95,7 +94,7 @@ const login = async (req, res) => {
       return res.status(400).json({ success: false, message: "User ID is required" });
     }
 
-    const user = await User.findOne({ uid }).select('-password'); // remove password from response
+    const user = await User.findOne({ uid }).select('-password'); 
 
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });

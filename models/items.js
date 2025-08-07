@@ -33,7 +33,6 @@ const itemSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ Pre-save hook to auto-increment itemId
 itemSchema.pre("save", async function (next) {
     if (this.isNew) {
       this.itemId = await getNextTxId("itemId");

@@ -1,58 +1,8 @@
 const Item = require("../models/items");
 
-// const addItem = async (req, res) => {
-//   try {
-//     const { uid } = req.user
-//     console.log("uid...........", uid)
-//     console.log("req.user.................", req.user)
-//     console.log("body...........", req.body)
-//     console.log("req.file...........", req.file)
-//     console.log("req.files...........", req.files)
-//     console.log("Headers...........", req.headers['content-type'])
-    
-//     if(!uid){
-//       return res.status(401).json({ message: "Unauthorized" });
-//     }
-//     const { title, description, price } = req.body;
-
-//     if (!title || !description || !price || !req.file) {
-//       console.log("Missing fields:", { title: !!title, description: !!description, price: !!price, file: !!req.file });
-//       return res.status(400).json({ message: "All fields including image are required" });
-//     }
-
-//     if (typeof title !== "string" || typeof description !== "string") {
-//       return res.status(400).json({ message: "Title and description must be strings" });
-//     }
-
-//     if (isNaN(price)) {
-//       return res.status(400).json({ message: "Price must be a number" });
-//     }
-
-//     const image = req.file.path;
-
-//     const newItem = await Item.create({
-//       title,
-//       description,
-//       price,
-//       image,
-//       uid,
-//     });
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Item created successfully",
-//     });
-//   } catch (error) {
-//     console.error("Add Item Error:", error);
-//     res.status(500).json({ message: "Server error", error: error.message });
-//   }
-// };
-
-
 const addItem = async (req, res) => {
   try {
-    const { uid } = req.user; // assuming verifyToken sets req.user
-console.log("req.file...........", req.file);
+    const { uid } = req.user; 
 
     const { title, description, price } = req.body;
     const image = req.file?.path;
@@ -111,7 +61,7 @@ const updateItem = async (req, res) => {
 
     const updatedData = { title, description, price };
 console.log("req.file", req.file)
-    // If image is uploaded
+    
     if (req.file) {
       updatedData.image = req.file.path;
     }
@@ -138,11 +88,11 @@ console.log("req.file", req.file)
 };
 
 
+
 const getItems = async (req, res) => {
   try {
     const {
       itemId, 
-      uid,
       search,
       minPrice,
       maxPrice,
@@ -150,11 +100,22 @@ const getItems = async (req, res) => {
       limit = 9,
     } = req.query;
 
+    const { role, uid } = req.user;
+
+    
     const filter = {};
 
-    if (itemId) filter.itemId = Number(itemId);
-    // if (uid) filter.uid = Number(uid);            // for admin
 
+    if (role !== 'admin') {
+      filter.uid = Number(uid);
+    }
+
+  
+    if (itemId) {
+      filter.itemId = Number(itemId);
+    }
+
+   
     if (search) {
       filter.$or = [
         { title: { $regex: search, $options: "i" } },
@@ -168,10 +129,9 @@ const getItems = async (req, res) => {
       if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
 
-    // 🔢 Pagination
+  
     const skip = (Number(page) - 1) * Number(limit);
 
-    // 📦 Fetch data
     const [items, totalItems] = await Promise.all([
       Item.find(filter)
         .skip(skip)
@@ -180,7 +140,6 @@ const getItems = async (req, res) => {
       Item.countDocuments(filter),
     ]);
 
-    // 📤 Response
     res.status(200).json({
       success: true,
       currentPage: Number(page),
@@ -191,7 +150,11 @@ const getItems = async (req, res) => {
 
   } catch (error) {
     console.error("Get Items Error:", error);
-    res.status(500).json({ success: false, message: "Server error", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
   }
 };
 
@@ -213,7 +176,6 @@ const deleteItem = async (req, res) => {
       });
     }
 
-    // If role is admin, allow deleting any item; otherwise, match uid
     const filter = { itemId: Number(itemId) };
     if (role !== "admin") {
       filter.uid = uid;

@@ -1,4 +1,4 @@
-const User = require("../models/userData"); // Adjust the path as per your project structure
+const User = require("../models/userData"); 
 
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
